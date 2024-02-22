@@ -32,7 +32,7 @@ class AlignedDataset(BaseDataset):
 
         self.dataset_size = len(self.A_paths) 
       
-    def __getitem__(self, index):        
+    def __getitem__(self, index):
         ### input A (label maps)
         A_path = self.A_paths[index]              
         A = Image.open(A_path)        
