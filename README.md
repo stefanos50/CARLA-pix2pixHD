@@ -36,7 +36,7 @@ pip3 install torch torchvision torchaudio --index-url https://download.pytorch.o
 ```
 - Clone this repo:
 ```bash
-git clone https://github.com/NVIDIA/pix2pixHD
+git clone https://github.com/stefanos50/CARLApix2pixHD
 cd pix2pixHD
 ```
 
@@ -98,10 +98,9 @@ The code works with most of the samples that CARLA already provides in the `\Car
 
 ### Visualization (Real-Time) Results
 
-![Screenshot 2024-02-22 153923](https://github.com/stefanos50/test/assets/36155283/2cf74300-53bc-4aa2-bb29-c544f54d4cec)
+![Screenshot 2024-02-22 153923](https://github.com/stefanos50/CARLApix2pixHD/assets/36155283/d77ce26b-ad30-46d7-8220-bf1994501255)
 
-![Screenshot 2024-02-22 160354](https://github.com/stefanos50/test/assets/36155283/a321a328-f210-4ff3-a0ba-109718073ccf)
-
+![Screenshot 2024-02-22 160354](https://github.com/stefanos50/CARLApix2pixHD/assets/36155283/40f74d44-7f2b-470f-865c-493c2bf6d05a)
 
 ### Dataset
 - We use the Cityscapes dataset. To train a model on the full dataset, please download it from the [official website](https://www.cityscapes-dataset.com/) (registration required).
