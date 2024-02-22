@@ -1,58 +1,26 @@
-<img src='imgs/teaser_720.gif' align="right" width=360>
+# Pix2PixHD for CARLA Simulator
+This is a modfied version of the [Pix2PixHD project](https://github.com/NVIDIA/pix2pixHD) that enables it's real-time execution for the CARLA simulator.
+<br>
 
-<br><br><br><br>
+<div align="center">
+  <img src="https://drive.google.com/thumbnail?id=1BJWDS6YfXTViW6Iv5rBlQ9fLWY76nhRW&sz=w1000" alt="Image" width="400px" height="auto">
+  <img src="https://drive.google.com/thumbnail?id=1jvY1qv7yFByHrjH5D7paDo5I5DVFqpkh&sz=w1000" alt="Image" width="400px" height="auto">
+</div>
 
-# pix2pixHD
-### [Project](https://tcwang0509.github.io/pix2pixHD/) | [Youtube](https://youtu.be/3AIpPlzM_qs) | [Paper](https://arxiv.org/pdf/1711.11585.pdf) <br>
-Pytorch implementation of our method for high-resolution (e.g. 2048x1024) photorealistic image-to-image translation. It can be used for turning semantic label maps into photo-realistic images or synthesizing portraits from face label maps. <br><br>
-[High-Resolution Image Synthesis and Semantic Manipulation with Conditional GANs](https://tcwang0509.github.io/pix2pixHD/)  
- [Ting-Chun Wang](https://tcwang0509.github.io/)<sup>1</sup>, [Ming-Yu Liu](http://mingyuliu.net/)<sup>1</sup>, [Jun-Yan Zhu](http://people.eecs.berkeley.edu/~junyanz/)<sup>2</sup>, Andrew Tao<sup>1</sup>, [Jan Kautz](http://jankautz.com/)<sup>1</sup>, [Bryan Catanzaro](http://catanzaro.name/)<sup>1</sup>  
- <sup>1</sup>NVIDIA Corporation, <sup>2</sup>UC Berkeley  
- In CVPR 2018.  
+## Features
 
-## Image-to-image translation at 2k/1k resolution
-- Our label-to-streetview results
-<p align='center'>  
-  <img src='imgs/teaser_label.png' width='400'/>
-  <img src='imgs/teaser_ours.jpg' width='400'/>
-</p>
-- Interactive editing results
-<p align='center'>  
-  <img src='imgs/teaser_style.gif' width='400'/>
-  <img src='imgs/teaser_label.gif' width='400'/>
-</p>
-- Additional streetview results
-<p align='center'>
-  <img src='imgs/cityscapes_1.jpg' width='400'/>
-  <img src='imgs/cityscapes_2.jpg' width='400'/>
-</p>
-<p align='center'>
-  <img src='imgs/cityscapes_3.jpg' width='400'/>
-  <img src='imgs/cityscapes_4.jpg' width='400'/>
-</p>
-
-- Label-to-face and interactive editing results
-<p align='center'>
-  <img src='imgs/face1_1.jpg' width='250'/>
-  <img src='imgs/face1_2.jpg' width='250'/>
-  <img src='imgs/face1_3.jpg' width='250'/>
-</p>
-<p align='center'>
-  <img src='imgs/face2_1.jpg' width='250'/>
-  <img src='imgs/face2_2.jpg' width='250'/>
-  <img src='imgs/face2_3.jpg' width='250'/>
-</p>
-
-- Our editing interface
-<p align='center'>
-  <img src='imgs/city_short.gif' width='330'/>
-  <img src='imgs/face_short.gif' width='450'/>
-</p>
+* Code for running Pix2PixHD in CARLA simulator in real-time.
+* Code for extracting a synthetic dataset in synchronous mode (RGB Frame, Synthesized Frame, Instance Segmentation, and Semantic Segmentation).
+* Support for synchronous and asynchronous modes.
+* Parameterization from a yaml config file rather than directly interacting with the code.
 
 ## Prerequisites
-- Linux or macOS
+- Linux or macOS or Windows
+- [CARLA version 0.9.14](https://carla.org/2022/12/23/release-0.9.14/) or higher (older versions do not follow the Cityscapes labeling scheme).
 - Python 2 or 3
-- NVIDIA GPU (11G memory or larger) + CUDA cuDNN
+- NVIDIA GPU (20G memory or larger) + CUDA cuDNN
+
+> 📝 **Note**: The code was tested with an RTX 4090 GPU, Windows 11 operating system, CARLA 0.9.14, Python 3.8, and PyTorch with CUDA 11.8.
 
 ## Getting Started
 ### Installation
@@ -60,6 +28,11 @@ Pytorch implementation of our method for high-resolution (e.g. 2048x1024) photor
 - Install python libraries [dominate](https://github.com/Knio/dominate).
 ```bash
 pip install dominate
+pip install numpy
+pip install carla
+pip install opencv-python
+pip install pillow
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 ```
 - Clone this repo:
 ```bash
@@ -67,18 +40,67 @@ git clone https://github.com/NVIDIA/pix2pixHD
 cd pix2pixHD
 ```
 
-
-### Testing
-- A few example Cityscapes test images are included in the `datasets` folder.
+### Real-Time Execution
 - Please download the pre-trained Cityscapes model from [here](https://drive.google.com/file/d/1h9SykUnuZul7J3Nbms2QGH1wa85nbN2-/view?usp=sharing) (google drive link), and put it under `./checkpoints/label2city_1024p/`
-- Test the model (`bash ./scripts/test_1024p.sh`):
+- Execute tha CARLA.exe (executable) and wait until the world is initialized.
+- Execute the following command:
 ```bash
-#!./scripts/test_1024p.sh
 python test.py --name label2city_1024p --netG local --ngf 32 --resize_or_crop none
 ```
-The test results will be saved to a html file here: `./results/label2city_1024p/test_latest/index.html`.
 
-More example scripts can be found in the `scripts` directory.
+### Configuration
+
+The yaml configuration file can be located in `./pix2pixhd/carla_settings.yaml/` and it contains the following parameters:
+
+```bash
+connection:
+ ip: 127.0.0.1 #server ip
+ port: 2000 #server port
+ timeout: 10.0 #timeout wait time
+
+world:
+ town: Town01 #the selected carla town (Town01, Town10HD, Town02, ..., etc.)
+ fixed_delta_seconds: 0.05
+ synchronous_mode: True #Synchronous or Asynchronous execution (True or False)
+ weather_preset: ClearNoon #The selected predefined weather presets from the documentations (ClearNoon, ClearSunet, ... , etc.)
+
+general:
+ vehicle: vehicle.tesla.model3 (the selected vehicle from the documentation catalogue)
+ cam_width: 2048 #camera image width
+ cam_height: 1024 #camera image heigh
+ cam_x: 1.5 #x coordinate (location) of the camera
+ cam_z: 1.4 #z coordinate (location) of the camera
+ visualize_results: True #visualize the sensor data and results (original frame, synthesized frame, semantic, and instance segmentation)
+ colorize_masks: False #colorize the grayscale semantic segmentation mask (it will drop the performance)
+ no_instance: False #do not use instance maps during the inference
+ scale_instance: True #scale the instance segmentation back to uint numbers
+ use_label_as_instance: False #use the semantic segmentation mask as instance (Cityscapes for most objects uses the same id as in the label mask in comparison with the CARLA instance segmentation sensor)
+ map_instances: False #map the labels for vehicles,pederestrian etc. to specific instances from Cityscapes (used if use_label_as_instance = False).
+ cityscapes_label: [24,26] #cityscapes classes
+ cityscapes_instance: [24001,26005] #instances mapping
+ run_model_every_n: 3 #run the moden every 'n' ticks of the world. If set to 1 then it will run for every frame. This can increase the performance (FPS).
+
+dataset:
+ export_data: True #export data on the disk (export location: \datasets\carla\)
+ export_step: 20 #export every 'step' frames
+ capture_when_static: True #export frames when the vehicle is not moving (True or False)
+ speed_threshold: 0.1 #export frames only when a speed threshold is reached
+
+pygame:
+ window_width: 1024 #the width of the pygame window
+ window_height: 512 #the height of the pygame window
+```
+
+### Spawning Traffic and other functionalities
+
+The code works with most of the samples that CARLA already provides in the `\CarlaEXE\PythonAPI\examples` directory. If you want to spawn a variety of vehicles and NPCs in the world, you can easily execute the provided `generate_traffic.py` script. The same is also applicable for dynamic weather via `dynamic_weather.py` and any other functionality that is already provided by the CARLA team.
+
+
+### Visualization (Real-Time) Results
+
+![Screenshot 2024-02-22 153923](https://github.com/stefanos50/test/assets/36155283/2cf74300-53bc-4aa2-bb29-c544f54d4cec)
+
+![Screenshot 2024-02-22 160354](https://github.com/stefanos50/test/assets/36155283/a321a328-f210-4ff3-a0ba-109718073ccf)
 
 
 ### Dataset
