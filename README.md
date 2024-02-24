@@ -36,8 +36,8 @@ pip3 install torch torchvision torchaudio --index-url https://download.pytorch.o
 ```
 - Clone this repo:
 ```bash
-git clone https://github.com/stefanos50/CARLApix2pixHD
-cd pix2pixHD
+git clone https://github.com/stefanos50/CARLA-pix2pixHD
+cd CARLA-pix2pixHD
 ```
 
 ### Real-Time Execution
@@ -50,7 +50,7 @@ python test.py --name label2city_1024p --netG local --ngf 32 --resize_or_crop no
 
 ### Configuration
 
-The yaml configuration file can be located in `./pix2pixhd/carla_settings.yaml/` and it contains the following parameters:
+The yaml configuration file can be located in `./CARLA-pix2pixHD/carla_settings.yaml/` and it contains the following parameters:
 
 ```bash
 connection:
